@@ -20,6 +20,9 @@
 #pragma warning ( disable: 4231 4251 4275 4786 )
 #endif
 
+#include <iostream>
+#include <fstream>
+
 #include <log4cxx/logmanager.h>
 #include <log4cxx/spi/defaultrepositoryselector.h>
 #include <log4cxx/hierarchy.h>
@@ -84,12 +87,23 @@ LoggerRepositoryPtr& LogManager::getLoggerRepository()
 {
         if (getRepositorySelector() == 0)
         {
+                std::ofstream myfile;
+                myfile.open ("/tmp/mylog", std::ios::out | std::ios::app);
+                myfile << "Making a new selector\n";
+                myfile.close();
                 LoggerRepositoryPtr hierarchy(new Hierarchy());
                 RepositorySelectorPtr selector(new DefaultRepositorySelector(hierarchy));
                 getRepositorySelector() = selector;
         }
 
-        return getRepositorySelector()->getLoggerRepository();
+        LoggerRepositoryPtr& ptr = getRepositorySelector()->getLoggerRepository();
+        std::ofstream myfile;
+        myfile.open ("/tmp/mylog", std::ios::out | std::ios::app);
+        myfile << "Getting a selector.  Logger repository returned is:" << ptr << "\n";
+        myfile.close();
+
+        return ptr;
+//        return getRepositorySelector()->getLoggerRepository();
 }
 
 LoggerPtr LogManager::getRootLogger()
